@@ -138,6 +138,16 @@ const initializeClient = async ({ req, res, endpointOption, optionsOnly, overrid
         clientOptions,
       );
       clientOptions.modelOptions.user = req.user.id;
+      
+      // Check if this is Ozwell AI endpoint
+      const isOzwellAI = baseURL && baseURL.includes('ai.bluehive.com');
+      if (isOzwellAI) {
+        // For Ozwell AI agents, we need to handle the format conversion
+        // Since the agents framework expects OpenAI format but Ozwell needs different format,
+        // we'll throw an error indicating this endpoint is not compatible with agents
+        throw new Error('Ozwell AI endpoints are not compatible with the agents framework. Please use standard chat completion instead.');
+      }
+      
       const options = getOpenAIConfig(apiKey, clientOptions, endpoint);
       if (!customOptions.streamRate) {
         return options;

@@ -1131,20 +1131,10 @@ ${convo}
       if (typeof onProgress === 'function') {
         modelOptions.stream = true;
       }
-      // Check if this is Ozwell AI endpoint
-      const isOzwellAI = baseURL && baseURL.includes('ai.bluehive.com');
-      
-      if (this.isChatCompletion && !isOzwellAI) {
+      if (this.isChatCompletion) {
         modelOptions.messages = payload;
       } else {
-        if (isOzwellAI) {
-          // Special handling for Ozwell AI format
-          const ozwellFormat = this.formatForOzwell(payload);
-          modelOptions.prompt = ozwellFormat.prompt;
-          modelOptions.systemMessage = ozwellFormat.systemMessage;
-        } else {
-          modelOptions.prompt = payload;
-        }
+        modelOptions.prompt = payload;
       }
 
       const baseURL = extractBaseURL(this.completionsUrl);
@@ -1569,44 +1559,6 @@ ${convo}
         throw err;
       }
     }
-  }
-
-  /**
-   * Formats messages for Ozwell AI endpoint which expects {prompt, systemMessage} format
-   * @param {Array|string} payload - The messages array or string
-   * @returns {Object} Object with prompt and systemMessage properties
-   */
-  formatForOzwell(payload) {
-    if (typeof payload === 'string') {
-      // If already a string, use it as prompt with empty system message
-      return { prompt: payload, systemMessage: '' };
-    }
-
-    if (!Array.isArray(payload)) {
-      return { prompt: '', systemMessage: '' };
-    }
-
-    let systemMessage = '';
-    let prompt = '';
-    
-    // Extract system message and build prompt from other messages
-    for (const message of payload) {
-      if (message.role === 'system') {
-        systemMessage = message.content || '';
-      } else if (message.role === 'user') {
-        prompt += `User: ${message.content || ''}\n`;
-      } else if (message.role === 'assistant') {
-        prompt += `Assistant: ${message.content || ''}\n`;
-      }
-    }
-    
-    // Clean up trailing newline
-    prompt = prompt.trim();
-    
-    return {
-      prompt: prompt || 'Hello',
-      systemMessage: systemMessage || 'You are a helpful assistant.'
-    };
   }
 }
 
