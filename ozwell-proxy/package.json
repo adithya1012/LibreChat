@@ -1,7 +1,7 @@
 {
   "name": "ozwell-proxy",
   "version": "1.0.0",
-  "description": "Proxy service to adapt Ozwell AI API for LibreChat",
+  "description": "Proxy server to bridge LibreChat and Ozwell API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
